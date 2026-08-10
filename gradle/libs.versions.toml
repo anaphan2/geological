@@ -1,0 +1,39 @@
+[versions]
+java = "25"
+kotlin = "2.4.0"
+
+loom = "1.16.3"
+moddev = "2.0.141"
+
+minecraft = "26.2"
+minecraftRange = "[26.2, 26.3)"
+
+neoforge = "26.2.0.8-beta"
+neoforgeRange="[4,)"
+
+neoForm = "26.2-1"
+
+kff = "6.3.0"
+kffRange = "[6.3, )"
+
+fabricLoader = "0.19.3"
+fabricApi = "0.152.1+26.2"
+
+flk = "1.13.12+kotlin.2.4.0"
+
+mixin = "0.8.7"
+mixinExtras = "0.5.4"
+
+[libraries]
+minecraft = { group = "com.mojang", name = "minecraft", version.ref = "minecraft" }
+fabricLoader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabricLoader" }
+fabricApi = { group = "net.fabricmc.fabric-api", name = "fabric-api", version.ref = "fabricApi" }
+flk = { group = "net.fabricmc", name = "fabric-language-kotlin", version.ref = "flk" }
+kff = { group = "thedarkcolour", name = "kotlinforforge-neoforge", version.ref = "kff" }
+mixin = { group = "org.spongepowered", name = "mixin", version.ref = "mixin" }
+mixinExtras-common = { group = "io.github.llamalad7", name = "mixinextras-common", version.ref = "mixinExtras" }
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+moddev = { id = "net.neoforged.moddev", version.ref = "moddev" }
+loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }

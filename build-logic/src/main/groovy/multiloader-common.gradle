@@ -1,0 +1,92 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+base {
+    archivesName = "${modId}-${project.name}-${libs.versions.minecraft.get()}"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(libs.versions.java.get())
+    withSourcesJar()
+    withJavadocJar()
+}
+
+tasks.withType(Jar).configureEach {
+    from(rootProject.file('LICENSE')) {
+        rename { "${it}_${mod_name}" }
+    }
+}
+
+jar {
+
+    manifest {
+        attributes([
+                'Specification-Title'   : modName,
+                'Specification-Vendor'  : modAuthor,
+                'Specification-Version' : project.jar.archiveVersion,
+                'Implementation-Title'  : project.name,
+                'Implementation-Version': project.jar.archiveVersion,
+                'Implementation-Vendor' : modAuthor,
+                'Built-On-Minecraft'    : libs.versions.minecraft.get()
+        ])
+    }
+}
+
+processResources {
+    var expandProps = [
+            'version'                      : version,
+            'group'                        : project.group, //Else we target the task's group.
+            'minecraft_version'            : libs.versions.minecraft.get(),
+            'minecraft_version_range'      : libs.versions.minecraftRange.get(),
+            'fabric_version'               : libs.versions.fabricApi.get(),
+            'fabric_loader_version'        : libs.versions.fabricLoader.get(),
+            'mod_name'                     : modName,
+            'mod_author'                   : modAuthor,
+            'mod_id'                       : modId,
+            'license'                      : license,
+            'description'                  : project.description,
+            'neoforge_version'             : libs.versions.neoforge.get(),
+            'neoforge_loader_version_range': libs.versions.neoforgeRange.get(),
+            'credits'                      : credits,
+            'java_version'                 : libs.versions.java.get()
+    ]
+
+    var jsonExpandProps = expandProps.collectEntries {
+        key, value -> [(key): value instanceof String ? value.replace('\n', '\\\\n') : value]
+    }
+
+    filesMatching(['META-INF/mods.toml', 'META-INF/neoforge.mods.toml']) {
+        expand expandProps
+    }
+
+    filesMatching(['pack.mcmeta', 'fabric.mod.json', '*.mixins.json']) {
+        expand jsonExpandProps
+    }
+
+    inputs.properties(expandProps)
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            artifactId base.archivesName.get()
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url System.getenv('local_maven_url')
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        name = "Kotlin for Forge"
+        setUrl("https://thedarkcolour.github.io/KotlinForForge/")
+    }
+}

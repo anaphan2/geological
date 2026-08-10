@@ -1,0 +1,48 @@
+name: Initialize Template
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Maven package
+        required: true
+      mod_id:
+        description: Mod ID
+        required: true
+      mod_name:
+        description: Main class name (PascalCase)
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  initialize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v6.3.0
+        with:
+          python-version: "3.12"
+
+      - name: Run setup
+        run: |
+          python setup.py \
+            --package "${{ github.event.inputs.package }}" \
+            --mod-id "${{ github.event.inputs.mod_id }}" \
+            --mod-name "${{ github.event.inputs.mod_name }}"
+
+      - name: Remove template files
+        run: |
+          rm setup.py
+
+      - name: Commit changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+          git add .
+          git commit -m "Initialize template" || true
+          git push
